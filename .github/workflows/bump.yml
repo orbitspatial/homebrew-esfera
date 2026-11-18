@@ -36,10 +36,10 @@ jobs:
           HOMEBREW_NO_AUTO_UPDATE: "1"
           HOMEBREW_NO_INSTALL_FROM_API: "1"
         run: |
-          brew tap south-loop-studios/esfera "$GITHUB_WORKSPACE"
-          brew install south-loop-studios/esfera/esfera
-          brew test south-loop-studios/esfera/esfera
-          brew audit --strict south-loop-studios/esfera/esfera
+          brew tap orbitspatial/esfera "$GITHUB_WORKSPACE"
+          brew install orbitspatial/esfera/esfera
+          brew test orbitspatial/esfera/esfera
+          brew audit --strict orbitspatial/esfera/esfera
       - name: Push
         if: steps.bump.outputs.changed == 'true'
         run: git push origin HEAD:main
