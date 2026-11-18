@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test scripts/
+      - run: node --test scripts/bump.test.mjs
       - id: bump
         run: node scripts/bump.mjs
       - name: Commit locally

@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test scripts/
+      - run: node --test scripts/bump.test.mjs
       - name: Install, test and audit
         env:
           HOMEBREW_NO_AUTO_UPDATE: "1"
