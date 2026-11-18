@@ -1,0 +1,45 @@
+name: Bump formula
+
+# Moves Formula/esfera.rb to the latest @esfera/cli once that release is over a
+# day old (Homebrew's npm cooldown), installs and tests it on macOS, and only
+# then pushes. Uses this repo's own token: no cross-repo credential exists.
+on:
+  schedule:
+    - cron: "23 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: bump
+
+jobs:
+  bump:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test scripts/
+      - id: bump
+        run: node scripts/bump.mjs
+      - name: Commit locally
+        if: steps.bump.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "esfera ${{ steps.bump.outputs.version }}"
+      - name: Install, test and audit from this checkout
+        if: steps.bump.outputs.changed == 'true'
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_FROM_API: "1"
+        run: |
+          brew tap south-loop-studios/esfera "$GITHUB_WORKSPACE"
+          brew install south-loop-studios/esfera/esfera
+          brew test south-loop-studios/esfera/esfera
+          brew audit --strict south-loop-studios/esfera/esfera
+      - name: Push
+        if: steps.bump.outputs.changed == 'true'
+        run: git push origin HEAD:main

@@ -1,0 +1,23 @@
+name: Test formula
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test scripts/
+      - name: Install, test and audit
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          brew tap south-loop-studios/esfera "$GITHUB_WORKSPACE"
+          brew install south-loop-studios/esfera/esfera
+          brew test south-loop-studios/esfera/esfera
+          brew audit --strict south-loop-studios/esfera/esfera
